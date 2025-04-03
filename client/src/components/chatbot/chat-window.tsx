@@ -164,12 +164,17 @@ export default function ChatWindow() {
   };
 
   // Render message with formatting
-  const renderMessageText = (text: string) => {
+  const renderMessageText = (text: string | null | undefined) => {
+    if (!text) return null;
+    
+    // Ensure text is a string
+    const textContent = String(text);
+    
     // Simple formatting for now, could be extended with markdown, etc.
-    return text.split('\n').map((line, i) => (
+    return textContent.split('\n').map((line, i) => (
       <React.Fragment key={i}>
         {line}
-        {i < text.split('\n').length - 1 && <br />}
+        {i < textContent.split('\n').length - 1 && <br />}
       </React.Fragment>
     ));
   };
@@ -283,9 +288,12 @@ export default function ChatWindow() {
                     ))}
                     
                     {/* Suggestions */}
-                    {messages.length > 0 && messages[messages.length - 1].sender === 'bot' && messages[messages.length - 1].suggestions && messages[messages.length - 1].suggestions.length > 0 && (
+                    {messages.length > 0 && 
+                     messages[messages.length - 1]?.sender === 'bot' && 
+                     Array.isArray(messages[messages.length - 1]?.suggestions) && 
+                     messages[messages.length - 1]?.suggestions.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {messages[messages.length - 1].suggestions?.map((suggestion, index) => (
+                        {messages[messages.length - 1]?.suggestions?.map((suggestion, index) => (
                           <Button
                             key={index}
                             variant="outline"
