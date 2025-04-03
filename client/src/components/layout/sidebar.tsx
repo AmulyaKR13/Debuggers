@@ -58,9 +58,9 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           bg-white dark:bg-gray-800 border-r dark:border-gray-700 overflow-y-auto`}
       >
         <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ml-2 pl-1">
             <span className="material-icons text-primary text-3xl">brain</span>
-            <span className="text-xl font-semibold">NeurAllocate</span>
+            <span className="text-xl font-semibold whitespace-nowrap">NeurAllocate</span>
           </div>
           <button 
             onClick={toggleTheme}
