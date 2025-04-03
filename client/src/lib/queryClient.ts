@@ -1,5 +1,10 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Extended RequestInit to include our custom options
+interface ExtendedRequestInit extends RequestInit {
+  responseType?: 'raw' | 'json';
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -11,7 +16,7 @@ export async function apiRequest<T = Response>(
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   url: string,
   body?: any,
-  options?: RequestInit
+  options?: ExtendedRequestInit
 ): Promise<T> {
   try {
     const res = await fetch(url, {
@@ -31,8 +36,8 @@ export async function apiRequest<T = Response>(
       return {} as T;
     }
     
-    // For Response type, just return the response
-    if (Object.getPrototypeOf(Response.prototype).isPrototypeOf(Response.prototype)) {
+    // If specifically expecting Response type, return the response
+    if (options && 'responseType' in options && options.responseType === 'raw') {
       return res as unknown as T;
     }
 
