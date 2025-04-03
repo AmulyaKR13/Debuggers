@@ -131,6 +131,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check if a user is already verified
+  app.get("/api/auth/check-verification", async (req, res) => {
+    try {
+      const { email } = req.query;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email as string);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found", isVerified: false });
+      }
+      
+      res.status(200).json({ isVerified: !!user.isVerified });
+    } catch (error) {
+      console.error("Error checking verification status:", error);
+      res.status(500).json({ message: "An error occurred", isVerified: false });
+    }
+  });
+
   // Verify OTP
   app.post("/api/auth/verify-otp", async (req, res) => {
     try {
@@ -138,6 +160,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!email || !otp) {
         return res.status(400).json({ message: "Email and OTP are required" });
+      }
+      
+      // Check if user is already verified first
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (user.isVerified) {
+        return res.status(200).json({ message: "Email already verified" });
       }
       
       // Verify OTP
@@ -153,12 +185,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "OTP has expired" });
       }
       
-      // Get user and set as verified
-      const user = await storage.getUserByEmail(email);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
       await storage.updateUserVerificationStatus(user.id, true);
       await storage.deleteOtpCode(otpRecord.id);
       
@@ -171,6 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(200).json({ message: "Email verification successful" });
     } catch (error) {
+      console.error("Error verifying OTP:", error);
       res.status(500).json({ message: "An error occurred during verification" });
     }
   });
