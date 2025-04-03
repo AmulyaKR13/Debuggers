@@ -1,6 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { aiService } from "./ai-service";
+import { chatbotService } from "./chatbot-service";
 import { z } from "zod";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
@@ -435,7 +437,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use AI service for task allocation if no assignee specified
       if (!task.assignedToUserId) {
         try {
-          const { aiService } = require('./ai-service');
+          // Use imported aiService instead of require()
           const match = await aiService.matchTaskToUser(task.id);
           
           if (match && match.userId) {
@@ -537,7 +539,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get team stats and analytics for dashboard
   app.get("/api/dashboard/stats", authenticate, async (req, res) => {
     try {
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const stats = await aiService.generateDashboardStats();
       res.status(200).json(stats);
     } catch (error) {
@@ -549,7 +551,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get AI insights for dashboard
   app.get("/api/dashboard/ai-insights", authenticate, async (req, res) => {
     try {
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const insights = await aiService.generateInsights();
       res.status(200).json(insights);
     } catch (error) {
@@ -561,7 +563,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get NBM system status
   app.get("/api/dashboard/nbm-status", authenticate, async (req, res) => {
     try {
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const nbmStatus = await aiService.generateNBMStatus();
       res.status(200).json(nbmStatus);
     } catch (error) {
@@ -573,7 +575,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get activity timeline
   app.get("/api/dashboard/activities", authenticate, async (req, res) => {
     try {
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const activities = await aiService.generateActivityTimeline();
       res.status(200).json(activities);
     } catch (error) {
@@ -585,7 +587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get team members with AI-enhanced insights
   app.get("/api/team", authenticate, async (req, res) => {
     try {
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const teamMembers = await aiService.generateTeamMembers();
       res.status(200).json(teamMembers);
     } catch (error) {
@@ -607,7 +609,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Task not found" });
       }
       
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const analysis = await aiService.analyzeTaskCognitive(taskId);
       
       res.status(200).json({
@@ -626,13 +628,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.session.userId as number;
       
-      const { aiService } = require('./ai-service');
+      // Using imported aiService
       const recommendations = await aiService.generateSkillRecommendations(userId);
       
       res.status(200).json(recommendations);
     } catch (error) {
       console.error("Error generating skill recommendations:", error);
       res.status(500).json({ message: "An error occurred generating recommendations" });
+    }
+  });
+  
+  // Send message to AI chatbot and get response
+  app.post("/api/chatbot/message", authenticate, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      const { message } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+      
+      // Using imported chatbotService
+      const response = await chatbotService.processMessage(userId, message);
+      
+      res.status(200).json(response);
+    } catch (error) {
+      console.error("Error processing chatbot message:", error);
+      res.status(500).json({ 
+        message: "An error occurred processing your message",
+        fallbackResponse: {
+          text: "I'm having trouble processing your request right now. Please try again shortly.",
+          suggestions: ["Show my tasks", "Team availability", "Help"]
+        }
+      });
     }
   });
 

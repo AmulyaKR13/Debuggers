@@ -11,6 +11,7 @@ import AdminReset from "@/pages/admin/reset";
 import Dashboard from "@/pages/dashboard/index";
 import Tasks from "@/pages/dashboard/tasks";
 import Team from "@/pages/dashboard/team";
+import ChatWindow from "./components/chatbot/chat-window";
 
 function Router() {
   return (
@@ -32,6 +33,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router />
+      <ChatWindow />
       <Toaster />
     </QueryClientProvider>
   );
