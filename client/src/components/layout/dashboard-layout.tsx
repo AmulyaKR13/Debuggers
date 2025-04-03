@@ -5,6 +5,15 @@ import { useCurrentUser, useIsAuthenticated } from "@/lib/auth";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ui/theme-provider";
+import NotificationCenter from "@/components/notifications/notification-center";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -75,22 +84,52 @@ export default function DashboardLayout({ children, title = "Dashboard" }: Dashb
             <h1 className="text-2xl font-bold">{title}</h1>
             
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <button className="flex items-center text-gray-500 hover:text-gray-900 dark:hover:text-white">
-                  <span className="material-icons">notifications</span>
-                  <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">3</span>
-                </button>
-              </div>
+              {/* Notification Center */}
+              <NotificationCenter />
               
-              <div className="flex items-center">
-                <img 
-                  className="h-8 w-8 rounded-full" 
-                  src={user?.avatar || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                  alt="User avatar" 
-                />
-                <span className="ml-2 text-sm font-medium">{user?.name || "User"}</span>
-                <span className="material-icons ml-1 text-gray-500">arrow_drop_down</span>
-              </div>
+              {/* User Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex items-center cursor-pointer">
+                    <img 
+                      className="h-8 w-8 rounded-full" 
+                      src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "User")}&background=1F8A28&color=fff`}
+                      alt="User avatar" 
+                    />
+                    <span className="ml-2 text-sm font-medium">{user?.name || "User"}</span>
+                    <span className="material-icons ml-1 text-gray-500">arrow_drop_down</span>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link href="/dashboard/profile">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <span className="material-icons mr-2 text-gray-500 text-sm">person</span>
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/dashboard/settings">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <span className="material-icons mr-2 text-gray-500 text-sm">settings</span>
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem className="cursor-pointer" onClick={toggleTheme}>
+                    <span className="material-icons mr-2 text-gray-500 text-sm">
+                      {theme === "dark" ? "light_mode" : "dark_mode"}
+                    </span>
+                    <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <Link href="/logout">
+                    <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
+                      <span className="material-icons mr-2 text-sm">logout</span>
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </Link>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>
