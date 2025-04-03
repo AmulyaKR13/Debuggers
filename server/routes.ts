@@ -432,11 +432,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const task = await storage.createTask(taskData);
       
-      // Simulate AI task allocation if no assignee specified
+      // Use AI service for task allocation if no assignee specified
       if (!task.assignedToUserId) {
-        // In a real app, this would be a call to the AI service
-        // For now, we'll just simulate it
-        console.log("AI task allocation triggered for task", task.id);
+        try {
+          const { aiService } = require('./ai-service');
+          const match = await aiService.matchTaskToUser(task.id);
+          
+          if (match && match.userId) {
+            const updatedTask = await storage.updateTaskAssignment(
+              task.id, 
+              match.userId, 
+              match.score
+            );
+            
+            if (updatedTask) {
+              console.log(`Task ${task.id} automatically assigned to user ${match.userId} with match score ${match.score}`);
+              return res.status(201).json(updatedTask);
+            }
+          }
+        } catch (error) {
+          console.error("Error in AI task allocation:", error);
+          // Continue with normal response if AI allocation fails
+        }
       }
       
       res.status(201).json(task);
@@ -520,22 +537,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get team stats and analytics for dashboard
   app.get("/api/dashboard/stats", authenticate, async (req, res) => {
     try {
-      // In a real application, this would be calculated from the database
-      // For this MVP, we'll return simulated data
-      
-      const stats = {
-        activeTasks: 28,
-        teamAvailability: 82,
-        completionRate: 94.2,
-        teamSentiment: "Positive",
-        activeTrend: 12, // percentage increase from last week
-        availabilityTrend: -3, // percentage decrease from last week
-        completionTrend: 7, // percentage increase from last month
-        sentimentTrend: 0 // no change
-      };
-      
+      const { aiService } = require('./ai-service');
+      const stats = await aiService.generateDashboardStats();
       res.status(200).json(stats);
     } catch (error) {
+      console.error("Error generating dashboard stats:", error);
       res.status(500).json({ message: "An error occurred" });
     }
   });
@@ -543,42 +549,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get AI insights for dashboard
   app.get("/api/dashboard/ai-insights", authenticate, async (req, res) => {
     try {
-      // In a real application, this would be data from Azure Cognitive Services
-      // For this MVP, we'll return simulated data
-      
-      const insights = {
-        cognitiveLoadAnalysis: {
-          design: 30,
-          development: 45,
-          research: 65,
-          testing: 35,
-          management: 25
-        },
-        sentimentAnalysis: {
-          score: 82,
-          status: "Positive"
-        },
-        recommendations: [
-          {
-            type: "cognitive",
-            title: "Reallocate research tasks from Emily to Alex",
-            description: "Emily's cognitive load is 25% above optimal. Alex has relevant skills and capacity."
-          },
-          {
-            type: "upskill",
-            title: "Upskill Jordan in frontend development",
-            description: "Jordan shows aptitude and interest. Recommend React course based on learning style analysis."
-          },
-          {
-            type: "conflict",
-            title: "Potential scheduling conflict detected",
-            description: "Marketing and Development teams have overlapping deadlines. AI suggests staggered milestones."
-          }
-        ]
-      };
-      
+      const { aiService } = require('./ai-service');
+      const insights = await aiService.generateInsights();
       res.status(200).json(insights);
     } catch (error) {
+      console.error("Error generating AI insights:", error);
       res.status(500).json({ message: "An error occurred" });
     }
   });
@@ -586,37 +561,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get NBM system status
   app.get("/api/dashboard/nbm-status", authenticate, async (req, res) => {
     try {
-      // In a real application, this would be data from the AI system
-      // For this MVP, we'll return simulated data
-      
-      const nbmStatus = {
-        status: "Active",
-        components: [
-          {
-            name: "Cognitive Load Balancing",
-            status: "Active",
-            performance: 75
-          },
-          {
-            name: "Sentiment Analysis",
-            status: "Active",
-            performance: 83
-          },
-          {
-            name: "Expertise Evolution",
-            status: "Active",
-            performance: 61
-          },
-          {
-            name: "Conflict Resolution",
-            status: "Learning",
-            performance: 42
-          }
-        ]
-      };
-      
+      const { aiService } = require('./ai-service');
+      const nbmStatus = await aiService.generateNBMStatus();
       res.status(200).json(nbmStatus);
     } catch (error) {
+      console.error("Error generating NBM status:", error);
       res.status(500).json({ message: "An error occurred" });
     }
   });
@@ -624,92 +573,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get activity timeline
   app.get("/api/dashboard/activities", authenticate, async (req, res) => {
     try {
-      // In a real application, this would be data from the system logs
-      // For this MVP, we'll return simulated data
-      
-      const activities = [
-        {
-          type: "ai_allocation",
-          title: "AI re-allocated backend development task from Sarah to Alex",
-          time: "15 minutes ago",
-          reason: "Cognitive load optimization"
-        },
-        {
-          type: "task_completed",
-          title: "Emma completed UI Design for Dashboard task",
-          time: "42 minutes ago"
-        },
-        {
-          type: "upskill",
-          title: "AEE identified upskilling opportunity for Jordan",
-          time: "1 hour ago",
-          recommendation: "React.js course based on skill gap analysis"
-        },
-        {
-          type: "conflict",
-          title: "Potential deadline conflict detected for Project Alpha",
-          time: "2 hours ago",
-          solution: "AI-suggested solution: Re-prioritize tasks or request deadline extension"
-        },
-        {
-          type: "sentiment",
-          title: "SBA detected increased stress in Development team",
-          time: "3 hours ago",
-          action: "Action taken: Temporary reduction in task allocation rate"
-        }
-      ];
-      
+      const { aiService } = require('./ai-service');
+      const activities = await aiService.generateActivityTimeline();
       res.status(200).json(activities);
     } catch (error) {
+      console.error("Error generating activity timeline:", error);
       res.status(500).json({ message: "An error occurred" });
     }
   });
 
-  // Get team members
+  // Get team members with AI-enhanced insights
   app.get("/api/team", authenticate, async (req, res) => {
     try {
-      // In a real application, this would fetch actual team members
-      // For this MVP, we'll return simulated data
-      
-      const teamMembers = [
-        {
-          id: 1,
-          name: "Emma Watson",
-          role: "UI/UX Designer",
-          status: "AVAILABLE",
-          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-          skills: ["Figma", "UI Design", "Wireframing", "Prototyping"],
-          workload: 65,
-          activeTasks: 3,
-          insight: "Excellent match for creative tasks requiring visual thinking"
-        },
-        {
-          id: 2,
-          name: "Michael Chen",
-          role: "Backend Developer",
-          status: "LIMITED",
-          avatar: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-          skills: ["Node.js", "MongoDB", "Express", "API Design"],
-          workload: 85,
-          activeTasks: 5,
-          insight: "Approaching cognitive load threshold, consider redistributing tasks"
-        },
-        {
-          id: 3,
-          name: "Sarah Johnson",
-          role: "UX Researcher",
-          status: "UNAVAILABLE",
-          avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-          skills: ["User Testing", "Interviews", "Analytics", "Reporting"],
-          workload: 95,
-          activeTasks: 7,
-          insight: "High stress detected. Immediate task redistribution recommended."
-        }
-      ];
-      
+      const { aiService } = require('./ai-service');
+      const teamMembers = await aiService.generateTeamMembers();
       res.status(200).json(teamMembers);
     } catch (error) {
+      console.error("Error generating team members:", error);
       res.status(500).json({ message: "An error occurred" });
+    }
+  });
+  
+  // Analyze task cognitive requirements with AI
+  app.get("/api/tasks/:id/cognitive-analysis", authenticate, async (req, res) => {
+    try {
+      const taskId = parseInt(req.params.id);
+      if (isNaN(taskId)) {
+        return res.status(400).json({ message: "Invalid task ID" });
+      }
+      
+      const task = await storage.getTask(taskId);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      const { aiService } = require('./ai-service');
+      const analysis = await aiService.analyzeTaskCognitive(taskId);
+      
+      res.status(200).json({
+        taskId,
+        taskTitle: task.title,
+        analysis
+      });
+    } catch (error) {
+      console.error("Error analyzing task:", error);
+      res.status(500).json({ message: "An error occurred during analysis" });
+    }
+  });
+  
+  // Get AI-generated skill recommendations for a user
+  app.get("/api/user/skill-recommendations", authenticate, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      
+      const { aiService } = require('./ai-service');
+      const recommendations = await aiService.generateSkillRecommendations(userId);
+      
+      res.status(200).json(recommendations);
+    } catch (error) {
+      console.error("Error generating skill recommendations:", error);
+      res.status(500).json({ message: "An error occurred generating recommendations" });
     }
   });
 
