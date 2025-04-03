@@ -691,6 +691,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get notifications
+  app.get("/api/notifications", authenticate, async (req, res) => {
+    try {
+      // In a real app, we'd fetch notifications from the database
+      // For now, we'll return mock data
+      const notifications = [
+        {
+          id: "1",
+          type: "task",
+          title: "New Task Assigned",
+          message: "You have been assigned a new task: \"Update authentication system\"",
+          time: "10 minutes ago",
+          read: false
+        },
+        {
+          id: "2",
+          type: "mention",
+          title: "Mentioned in Comment",
+          message: "Likhitha mentioned you in a comment on \"API integration task\"",
+          time: "1 hour ago",
+          read: false
+        },
+        {
+          id: "3",
+          type: "system",
+          title: "AI Task Optimization",
+          message: "The AI has optimized your task allocation based on recent cognitive load analysis",
+          time: "3 hours ago",
+          read: false
+        },
+        {
+          id: "4",
+          type: "task",
+          title: "Task Status Updated",
+          message: "The task \"Frontend fixes\" has been marked as completed",
+          time: "Yesterday",
+          read: true
+        },
+        {
+          id: "5",
+          type: "system",
+          title: "Weekly Summary",
+          message: "Your weekly productivity summary is now available. You completed 12 tasks this week!",
+          time: "2 days ago",
+          read: true
+        }
+      ];
+      
+      res.status(200).json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "An error occurred while fetching notifications" });
+    }
+  });
+  
+  // Mark notification as read
+  app.patch("/api/notifications/:id/read", authenticate, async (req, res) => {
+    try {
+      const notificationId = req.params.id;
+      
+      // In a real app, we'd update the notification in the database
+      // For now, we'll just return success
+      
+      res.status(200).json({ message: "Notification marked as read" });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "An error occurred while marking notification as read" });
+    }
+  });
+  
+  // Mark all notifications as read
+  app.post("/api/notifications/mark-all-read", authenticate, async (req, res) => {
+    try {
+      // In a real app, we'd update all notifications in the database
+      // For now, we'll just return success
+      
+      res.status(200).json({ message: "All notifications marked as read" });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "An error occurred while marking all notifications as read" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

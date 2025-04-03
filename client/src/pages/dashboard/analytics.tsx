@@ -7,6 +7,32 @@ import { Progress } from '@/components/ui/progress';
 import { apiRequest } from '@/lib/queryClient';
 import { DashboardStats, AIInsights } from '@/lib/ai-services';
 import { useToast } from '@/hooks/use-toast';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  ArcElement,
+} from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  ArcElement
+);
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
