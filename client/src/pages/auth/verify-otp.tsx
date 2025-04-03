@@ -22,6 +22,7 @@ export default function VerifyOtp() {
   const search = useSearch();
   const searchParams = new URLSearchParams(search);
   const email = searchParams.get("email") || "";
+  const otpParam = searchParams.get("otp") || "";
   const { toast } = useToast();
   const verifyOtp = useVerifyOtp();
   const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
@@ -48,9 +49,30 @@ export default function VerifyOtp() {
   const form = useForm<OTPFormValues>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
-      otp: "",
+      otp: otpParam,
     },
   });
+  
+  // Set the OTP value from URL params if available and auto-submit if valid
+  useEffect(() => {
+    if (otpParam) {
+      form.setValue("otp", otpParam);
+      
+      // Auto-submit if OTP is valid (6 digits)
+      if (otpParam.length === 6 && /^\d+$/.test(otpParam)) {
+        const timer = setTimeout(() => {
+          form.handleSubmit((data) => {
+            verifyOtp.mutate({
+              email,
+              otp: data.otp,
+            });
+          })();
+        }, 1000); // Short delay to allow user to see what's happening
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [otpParam, form, email, verifyOtp]);
 
   const onSubmit = async (data: OTPFormValues) => {
     if (!email) {

@@ -40,19 +40,32 @@ export default function Register() {
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
-      await register.mutateAsync({
+      const result = await register.mutateAsync({
         name: data.name,
         email: data.email,
         password: data.password,
       });
       
-      toast({
-        title: "Registration successful",
-        description: "Please check your email for verification code",
-      });
+      // Display OTP to user for testing purposes
+      if (result.otp) {
+        toast({
+          title: "Registration successful",
+          description: `For testing: Your OTP is ${result.otp}`,
+          duration: 10000, // Show for 10 seconds
+        });
+      } else {
+        toast({
+          title: "Registration successful",
+          description: "Please check your email for verification code",
+        });
+      }
       
-      // Navigate to OTP verification page with email in state
-      setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+      // Navigate to OTP verification page with email and OTP in state
+      if (result.otp) {
+        setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}&otp=${result.otp}`);
+      } else {
+        setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+      }
     } catch (error) {
       console.error("Registration error:", error);
       toast({
