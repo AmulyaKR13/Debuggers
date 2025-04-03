@@ -36,10 +36,17 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await login.mutateAsync({
+      console.log("Submitting login form with:", { 
+        email: data.email, 
+        passwordLength: data.password.length 
+      });
+      
+      const result = await login.mutateAsync({
         email: data.email,
         password: data.password,
       });
+      
+      console.log("Login response:", result);
       
       toast({
         title: "Login successful",
@@ -47,13 +54,51 @@ export default function Login() {
       });
       
       setLocation("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again",
-        variant: "destructive",
-      });
+      
+      // Try to extract more specific error information
+      let errorMessage = "Please check your credentials and try again";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      // If the error message contains "not verified", suggest verifying email
+      if (errorMessage.toLowerCase().includes("not verified")) {
+        errorMessage = "Your email is not verified. Please check your email for verification code.";
+        
+        // Add option to redirect to verify page
+        toast({
+          title: "Login failed",
+          description: (
+            <div>
+              {errorMessage}
+              <div className="mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}`)}
+                >
+                  Go to verification page
+                </Button>
+              </div>
+            </div>
+          ),
+          variant: "destructive",
+          duration: 10000,
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     }
   };
 

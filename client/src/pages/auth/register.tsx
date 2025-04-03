@@ -40,37 +40,56 @@ export default function Register() {
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
+      console.log("Submitting registration form with:", { 
+        name: data.name, 
+        email: data.email, 
+        passwordLength: data.password.length 
+      });
+      
       const result = await register.mutateAsync({
         name: data.name,
         email: data.email,
         password: data.password,
       });
       
+      console.log("Registration response:", result);
+      
       // Display OTP to user for testing purposes
-      if (result.otp) {
+      if (result && result.otp) {
         toast({
           title: "Registration successful",
           description: `For testing: Your OTP is ${result.otp}`,
           duration: 10000, // Show for 10 seconds
         });
-      } else {
+        
+        // Navigate to OTP verification page with email and OTP in state
+        setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}&otp=${result.otp}`);
+      } else if (result) {
         toast({
           title: "Registration successful",
           description: "Please check your email for verification code",
         });
+        
+        // Navigate to OTP verification page with just email
+        setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+      } else {
+        throw new Error("No result returned from registration API");
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      
+      // Try to extract more specific error information
+      let errorMessage = "Please check your information and try again";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
       }
       
-      // Navigate to OTP verification page with email and OTP in state
-      if (result.otp) {
-        setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}&otp=${result.otp}`);
-      } else {
-        setLocation(`/verify-otp?email=${encodeURIComponent(data.email)}`);
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: "Please check your information and try again",
+        description: errorMessage,
         variant: "destructive",
       });
     }

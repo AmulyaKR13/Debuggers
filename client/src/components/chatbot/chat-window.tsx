@@ -110,9 +110,8 @@ export default function ChatWindow() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest<ChatbotResponse>('/api/chatbot/message', {
-        method: 'POST',
-        body: JSON.stringify({ message: inputValue })
+      const response = await apiRequest<ChatbotResponse>('POST', '/api/chatbot/message', { 
+        message: inputValue 
       });
 
       const botMessage: Message = {

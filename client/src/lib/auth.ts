@@ -39,8 +39,7 @@ export type ResetPasswordData = {
 export const useLogin = () => {
   return useMutation({
     mutationFn: async (credentials: LoginCredentials) => {
-      const response = await apiRequest("POST", "/api/auth/login", credentials);
-      return response.json();
+      return await apiRequest("POST", "/api/auth/login", credentials);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/me"] });
@@ -52,8 +51,7 @@ export const useLogin = () => {
 export const useRegister = () => {
   return useMutation({
     mutationFn: async (data: RegisterData) => {
-      const response = await apiRequest("POST", "/api/auth/register", data);
-      return response.json();
+      return await apiRequest("POST", "/api/auth/register", data);
     },
   });
 };
@@ -62,8 +60,10 @@ export const useRegister = () => {
 export const useVerifyOtp = () => {
   return useMutation({
     mutationFn: async (data: OtpVerificationData) => {
-      const response = await apiRequest("POST", "/api/auth/verify-otp", data);
-      return response.json();
+      return await apiRequest("POST", "/api/auth/verify-otp", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/me"] });
     },
   });
 };
@@ -72,8 +72,7 @@ export const useVerifyOtp = () => {
 export const useForgotPassword = () => {
   return useMutation({
     mutationFn: async (data: ForgotPasswordData) => {
-      const response = await apiRequest("POST", "/api/auth/forgot-password", data);
-      return response.json();
+      return await apiRequest("POST", "/api/auth/forgot-password", data);
     },
   });
 };
@@ -82,8 +81,7 @@ export const useForgotPassword = () => {
 export const useResetPassword = () => {
   return useMutation({
     mutationFn: async (data: ResetPasswordData) => {
-      const response = await apiRequest("POST", "/api/auth/reset-password", data);
-      return response.json();
+      return await apiRequest("POST", "/api/auth/reset-password", data);
     },
   });
 };
@@ -92,8 +90,7 @@ export const useResetPassword = () => {
 export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/auth/logout", {});
-      return response.json();
+      return await apiRequest("POST", "/api/auth/logout", {});
     },
     onSuccess: () => {
       queryClient.clear();
@@ -105,22 +102,11 @@ export const useLogout = () => {
 export const useCurrentUser = () => {
   return useQuery<User | null>({
     queryKey: ["/api/user/me"],
-    queryFn: async ({ queryKey }) => {
+    queryFn: async () => {
       try {
-        const response = await fetch(queryKey[0] as string, {
-          credentials: "include",
-        });
-        
-        if (response.status === 401) {
-          return null;
-        }
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch user");
-        }
-        
-        return response.json();
+        return await apiRequest("GET", "/api/user/me");
       } catch (error) {
+        console.error("Failed to fetch user:", error);
         return null;
       }
     },

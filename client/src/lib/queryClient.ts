@@ -8,24 +8,63 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest<T = Response>(
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   url: string,
+  body?: any,
   options?: RequestInit
 ): Promise<T> {
-  const res = await fetch(url, {
-    ...options,
-    headers: options?.body ? { "Content-Type": "application/json", ...options?.headers } : options?.headers,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(url, {
+      method,
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+      },
+      credentials: "include",
+      ...options,
+    });
 
-  await throwIfResNotOk(res);
-  
-  // If T is explicitly set to Response, return the response object
-  if (Object.getPrototypeOf(Response.prototype).isPrototypeOf(Response.prototype)) {
-    return res as unknown as T;
+    // Handle different response types
+    if (res.status === 204) {
+      // No content response
+      return {} as T;
+    }
+    
+    // For Response type, just return the response
+    if (Object.getPrototypeOf(Response.prototype).isPrototypeOf(Response.prototype)) {
+      return res as unknown as T;
+    }
+
+    // Try to parse the response as JSON
+    try {
+      const data = await res.json();
+      
+      // If the response is not OK, throw an error with the error details
+      if (!res.ok) {
+        const errorMessage = data.message || res.statusText;
+        const error = new Error(errorMessage);
+        (error as any).status = res.status;
+        (error as any).data = data;
+        throw error;
+      }
+      
+      return data as T;
+    } catch (parseError) {
+      // If JSON parsing fails and response is not OK, throw a generic error
+      if (!res.ok) {
+        const error = new Error(res.statusText || "Request failed");
+        (error as any).status = res.status;
+        throw error;
+      }
+      
+      // If we can't parse JSON but the response is OK, return empty object
+      return {} as T;
+    }
+  } catch (error) {
+    console.error(`API request failed: ${method} ${url}`, error);
+    throw error;
   }
-  
-  // Otherwise, parse the JSON
-  return await res.json() as T;
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
