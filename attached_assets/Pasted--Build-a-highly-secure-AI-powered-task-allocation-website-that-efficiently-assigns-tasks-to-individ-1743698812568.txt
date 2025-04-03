@@ -1,0 +1,101 @@
+"Build a highly secure, AI-powered task allocation website that efficiently assigns tasks to individuals based on skills, availability, cognitive strength, and emotional state using Neuro-Behavioral AI Matching (NBM). The system must include a robust authentication process with email-based OTP verification, account management, and strict security rules to prevent duplicate registrations. The core functionalities should include:"
+
+💡 Key Features:
+🔹 1. AI-Powered Task Matching System
+✅ Assigns tasks based on skills, experience, availability, and behavioral patterns using AI & Deep Learning models.
+✅ Implements Neuro-Behavioral AI Matching (NBM) to factor in stress levels, cognitive performance, and fatigue tracking.
+✅ Uses Graph Neural Networks (GNNs) and Reinforcement Learning for task allocation optimization.
+
+🔹 2. Smart Availability & Workload Optimization
+✅ Uses Dynamic Availability Intelligence (DAI) to optimize workload balancing.
+✅ AI automatically adjusts assignments based on real-time fatigue tracking & workload prediction models.
+
+🔹 3. Sentiment-Based Task Assignment (SBA)
+✅ Detects user motivation, mood, and energy levels before assigning tasks.
+✅ Ensures higher job satisfaction and improved performance by aligning tasks with real-time mental state.
+
+🔹 4. Adaptive Expertise Evolution (AEE)
+✅ AI continuously tracks skill progression and recommends upskilling opportunities.
+✅ Suggests personalized learning paths based on performance trends.
+
+🔹 5. AI-Powered Conflict Resolution
+✅ Detects potential workload clashes, interpersonal conflicts, and overlapping assignments.
+✅ Provides AI-driven real-time mediation for smoother task allocation.
+
+🛡 Authentication & Security Features (Enhanced)
+🔹 6. User Registration with OTP Verification & Email Confirmation
+✅ Users must verify their email via OTP before account activation.
+✅ OTP expires in 5 minutes and is securely stored in a Redis database.
+✅ Once OTP is verified, an account confirmation email is sent.
+
+🔹 7. Secure Login System with Email Notifications
+✅ Users receive an email alert when they log in for security.
+✅ Login is only allowed for registered accounts.
+✅ Users cannot register again with the same email (One-time registration per email).
+
+🔹 8. Prevent Duplicate Registrations & Unauthorized Logins
+✅ Each email can only be used once for registration.
+✅ If an email is already registered, the system will prevent re-registration.
+✅ If login is attempted with an unregistered email, an error message is shown.
+
+🔹 9. Forgot Password & Reset via OTP
+✅ Users can reset their password if forgotten via OTP-based verification.
+✅ A reset password email will be sent to their registered email.
+
+🎨 Frontend: Next.js + Tailwind CSS for a Stunning UI/UX
+✅ Uses Next.js (React framework) for a fast, SEO-optimized, and responsive UI.
+✅ Features modern UI with Tailwind CSS for a sleek, professional design.
+✅ Includes Dark mode toggle and an interactive dashboard with AI-generated insights.
+
+🔹 Core UI Pages:
+1️⃣ Homepage: AI-powered introduction with animations and an interactive task demo.
+2️⃣ Dashboard: Personalized dashboard showing real-time task assignments, workload stats, and emotional analysis.
+3️⃣ Task Management Panel: Accept/reject tasks, view recommendations, and interact with AI suggestions.
+4️⃣ Collaboration Hub: Chat with team members via Socket.IO-powered real-time messaging.
+5️⃣ Skill Growth Tracker: AI-powered insights on career growth and upskilling.
+6️⃣ Registration/Login Page:
+
+Users enter their email and password.
+
+System checks if email is already registered.
+
+If not, system sends OTP for verification.
+
+OTP must be entered to complete registration.
+
+Once verified, a welcome email is sent to confirm successful registration.
+
+On future logins, users receive an email notification upon successful login.
+
+⚙ Backend: FastAPI + Azure Cognitive Services + Email Service
+✅ FastAPI-powered AI backend for handling task allocation requests in real time.
+✅ Azure Cognitive Services integration for emotion detection, speech-to-text analysis, and NLP-based conflict resolution.
+✅ Graph Neural Networks (GNNs) + Deep Learning models for accurate task prediction.
+
+🔹 Authentication APIs:
+1️⃣ POST /register → Registers a new user and sends an OTP to their email.
+2️⃣ POST /verify-otp → Verifies OTP and activates the user account.
+3️⃣ POST /login → Validates user credentials and sends a login notification email.
+4️⃣ POST /send-email → Sends task allocation emails to users.
+5️⃣ POST /forgot-password → Sends OTP for password reset.
+6️⃣ POST /reset-password → Resets password after OTP verification.
+
+📡 Deployment: Full-Stack Cloud Hosting
+✅ Frontend on Vercel for a fast and scalable React-based UI.
+✅ Backend on Azure Functions for a cost-effective AI service.
+✅ Database on PostgreSQL (Supabase) + Redis for OTP storage.
+
+🚀 Deliverables:
+✅ A fully functional, AI-powered task allocation system with:
+
+Advanced email-based authentication (OTP verification, secure login, and notifications).
+
+Duplicate email prevention (one-time registration per email).
+
+Password reset via OTP.
+✅ Real-time workforce optimization using behavioral AI, sentiment analysis, and deep learning.
+✅ A scalable web app with a modern, responsive UI and seamless user experience.
+✅ A live demo, technical documentation, and a GitHub repository for future scalability.
+
+🔹 🔮 Ensure the website stands out by using AI-generated visuals, animations, and an ultra-modern UI with smooth interactions.
+🔹 💡 The final website should be a breakthrough solution, integrating AI-driven intelligence with human-centric task allocation like never before!
