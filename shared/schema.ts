@@ -38,11 +38,14 @@ export const insertOtpSchema = createInsertSchema(otpCodes).omit({
 export const skills = pgTable("skills", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
-  category: text("category").notNull(), // 'TECHNICAL', 'SOFT', etc.
+  category: text("category"),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertSkillSchema = createInsertSchema(skills).omit({
   id: true,
+  createdAt: true,
 });
 
 // UserSkill model
@@ -52,12 +55,12 @@ export const userSkills = pgTable("user_skills", {
   skillId: integer("skill_id").notNull(),
   proficiency: integer("proficiency").notNull(), // 1-5
   lastUsed: timestamp("last_used"),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertUserSkillSchema = createInsertSchema(userSkills).omit({
   id: true,
-  updatedAt: true,
+  createdAt: true,
 });
 
 // Task model
@@ -72,7 +75,7 @@ export const tasks = pgTable("tasks", {
   dueDate: timestamp("due_date"),
   aiMatchScore: real("ai_match_score"),
   requiredSkills: json("required_skills").$type<number[]>(), // Array of skill IDs
-  cognitiveLoad: integer("cognitive_load"), // 1-10
+  cognitiveLoad: real("cognitive_load"), // 1-10
   sentimentScore: real("sentiment_score"), // -1 to 1
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -105,16 +108,14 @@ export const insertAvailabilitySchema = createInsertSchema(availabilities).omit(
 export const userAnalytics = pgTable("user_analytics", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  cognitiveLoad: integer("cognitive_load"), // 1-10
-  sentimentScore: real("sentiment_score"), // -1 to 1
-  workloadPercentage: real("workload_percentage"), // 0-100
-  activeTasks: integer("active_tasks"),
-  timestamp: timestamp("timestamp").defaultNow(),
+  metric: text("metric").notNull(),
+  value: real("value").notNull(),
+  recordedAt: timestamp("recorded_at").defaultNow(),
 });
 
 export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit({
   id: true,
-  timestamp: true,
+  recordedAt: true,
 });
 
 // Types

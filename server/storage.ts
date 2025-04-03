@@ -324,4 +324,6 @@ export class MemStorage implements IStorage {
 }
 
 // Create and export a singleton instance
-export const storage = new MemStorage();
+// We're using the DbStorage implementation now
+import { DbStorage } from './db-storage';
+export const storage = new DbStorage();
