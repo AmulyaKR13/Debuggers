@@ -21,6 +21,17 @@ function sendEmail(to: string, subject: string, body: string): Promise<void> {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Development-only route to clear the users and OTP codes (do not use in production)
+  if (process.env.NODE_ENV !== "production") {
+    app.post("/api/dev/clear-users", async (req, res) => {
+      try {
+        await storage.clearUsersAndOtpCodes();
+        res.status(200).json({ message: "Users and OTP codes cleared successfully" });
+      } catch (error) {
+        res.status(500).json({ message: "An error occurred while clearing data" });
+      }
+    });
+  }
   // Set up session middleware
   app.use(
     session({

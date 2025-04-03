@@ -7,6 +7,7 @@ import Home from "@/pages/home";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import VerifyOtp from "@/pages/auth/verify-otp";
+import AdminReset from "@/pages/admin/reset";
 import Dashboard from "@/pages/dashboard/index";
 import Tasks from "@/pages/dashboard/tasks";
 import Team from "@/pages/dashboard/team";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard/tasks" component={Tasks} />
       <Route path="/dashboard/team" component={Team} />
+      <Route path="/admin/reset" component={AdminReset} />
       <Route component={NotFound} />
     </Switch>
   );

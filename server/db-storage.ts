@@ -38,6 +38,14 @@ export class DbStorage implements IStorage {
     return result[0];
   }
   
+  async clearUsersAndOtpCodes(): Promise<void> {
+    // Delete all OTP codes
+    await db.delete(otpCodes);
+    
+    // Delete all users
+    await db.delete(users);
+  }
+  
   // OTP operations
   async createOtpCode(otpData: InsertOtpCode): Promise<OtpCode> {
     const result = await db.insert(otpCodes).values(otpData).returning();

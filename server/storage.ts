@@ -30,6 +30,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserVerificationStatus(id: number, isVerified: boolean): Promise<User | undefined>;
+  clearUsersAndOtpCodes(): Promise<void>;
   
   // OTP operations
   createOtpCode(otpData: InsertOtpCode): Promise<OtpCode>;
@@ -171,6 +172,14 @@ export class MemStorage implements IStorage {
 
   async deleteOtpCode(id: number): Promise<void> {
     this.otpCodes.delete(id);
+  }
+  
+  async clearUsersAndOtpCodes(): Promise<void> {
+    this.users.clear();
+    this.otpCodes.clear();
+    this.currentUserId = 1;
+    this.currentOtpId = 1;
+    this.seedData();
   }
   
   // Skill methods
