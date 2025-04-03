@@ -32,6 +32,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
   }
+  
+  // Check if a user's email is already verified
+  app.get("/api/auth/check-verification", async (req, res) => {
+    try {
+      const email = req.query.email as string;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.status(200).json({ isVerified: user.isVerified });
+    } catch (error) {
+      res.status(500).json({ message: "An error occurred while checking verification status" });
+    }
+  });
   // Set up session middleware
   app.use(
     session({

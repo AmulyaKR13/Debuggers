@@ -86,6 +86,24 @@ export default function VerifyOtp() {
     }
     
     try {
+      // Check if user is already verified
+      const response = await fetch(`/api/auth/check-verification?email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+      });
+      
+      const result = await response.json();
+      
+      // If user is already verified, redirect to login
+      if (result.isVerified) {
+        toast({
+          title: "Already verified",
+          description: "Your email is already verified. Please log in.",
+        });
+        setLocation("/login");
+        return;
+      }
+      
+      // If not verified, proceed with verification
       await verifyOtp.mutateAsync({
         email,
         otp: data.otp,
