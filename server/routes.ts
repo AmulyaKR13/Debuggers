@@ -82,9 +82,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `Your verification code is: ${otp}. This code will expire in 5 minutes.`
       );
       
+      // For development purposes, include the OTP in the response
       res.status(201).json({
         message: "Registration successful. Please verify your email.",
         userId: user.id,
+        // Include OTP in response for testing (would be removed in production)
+        otp: otp
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -222,7 +225,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `Your password reset code is: ${otp}. This code will expire in 5 minutes.`
       );
       
-      res.status(200).json({ message: "If your email is registered, you will receive a reset link shortly" });
+      // For development purposes, include the OTP in the response
+      res.status(200).json({ 
+        message: "If your email is registered, you will receive a reset link shortly",
+        // Include OTP in response for testing (would be removed in production)
+        otp: otp
+      });
     } catch (error) {
       res.status(500).json({ message: "An error occurred" });
     }
