@@ -1,0 +1,19 @@
+
+Team Name: Team NeurAllocate
+
+Problem Statement Title: 
+AI-Powered Task Allocation System for Enhanced Team Performance
+
+College Name:
+[Your College Name]
+
+Team Members:
+1. [Full Name]
+   Email: [Email Address]
+   Phone: [Phone Number]
+
+2. [Full Name]
+   Email: [Email Address]
+   Phone: [Phone Number]
+
+[Add additional team members as needed]
