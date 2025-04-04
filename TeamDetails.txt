@@ -1,19 +1,19 @@
 
-Team Name: Team NeurAllocate
+Team Name: Team Debuggers
 
 Problem Statement Title: 
 AI-Powered Task Allocation System for Enhanced Team Performance
 
 College Name:
-[Your College Name]
+JSSATE,BENGALURU
 
 Team Members:
-1. [Full Name]
-   Email: [Email Address]
-   Phone: [Phone Number]
+1. Amulya K R
+   Email: amulyakr8@gmail.com
+   Phone:7022951360
 
-2. [Full Name]
-   Email: [Email Address]
-   Phone: [Phone Number]
+2. Likhitha Reddy
+   Email: likhithab205@gmail.com
+   Phone: 9014650649
 
-[Add additional team members as needed]
+
